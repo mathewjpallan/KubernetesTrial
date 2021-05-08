@@ -2,12 +2,13 @@
 
 ## Trying out Kubernetes(K8s) on a local workstation
 
-## 1. Install docker
+### 1. Install docker
 
-## 2. Setup minikube on your workstation by following the steps in https://minikube.sigs.k8s.io/docs/start/
+### 2. Setup minikube on your workstation
 
-#### The below steps were tried on a Dell Precision laptop running Linux Mint 20.1 to run minikube on docker.
+Please follow the steps in https://minikube.sigs.k8s.io/docs/start/ to setup minikube
 
+The below steps were tried on a Dell Precision laptop running Linux Mint 20.1 to run minikube on docker.
 ```
  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
  sudo install minikube-linux-amd64 /usr/local/bin/minikube
@@ -20,8 +21,9 @@ kubectl get pods --all-namespaces
 kubectl get all --all-namespaces
 
 
-## 3. Create a docker image that we can use within the K8s cluster
-#### This repo includes an echo service that can be built by the following steps
+### 3. Create a docker image that we can use within the K8s cluster
+
+This repo includes an echo service that can be built by the following steps
 
 ```
  cd echoservice
@@ -40,7 +42,7 @@ kubectl get all --all-namespaces
  docker container stop echoservice //to stop the container
 ```
 
-## 4. Run the echo service in kubernetes with a nginx reverse proxy in front.
+### 4. Run the echo service in kubernetes with a nginx reverse proxy in front.
 
 ```
 cd services
@@ -52,7 +54,7 @@ kubectl get services //This would indicate the port (in the 32000 range) that is
 curl minikubeip:nodeport/api/echo/teststring //This should return teststring in the response if working as expected
 ```
 
-## 5. How do you monitor the cluster
+### 5. How do you monitor the cluster
 We can use prometheus operator to monitor the cluster. The operator requires multiple CRDs and services to work and so it is best installed using helm charts.
 
 Setup helm on your workstation by following the steps in https://helm.sh/docs/intro/install/. The steps involve downloading the helm binary to the /usr/local/bin folder so that it is accessible on shell.
