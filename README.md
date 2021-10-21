@@ -16,10 +16,10 @@ The below steps were tried on a Dell Precision laptop running Linux Mint 20.1 to
 ```
 At this point we have a functional K8s cluster with 1 node running on the workstation and we can use the Kubernetes command-line tool(kubectl) to interact with the K8s cluster
 
-Eg.
+```
 kubectl get pods --all-namespaces
 kubectl get all --all-namespaces
-
+```
 
 ### 3. Create a docker image that we can use within the K8s cluster
 
