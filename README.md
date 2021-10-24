@@ -12,7 +12,7 @@ The below steps were tried on a Dell Precision laptop running Linux Mint 20.1 to
 ```
  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
  sudo install minikube-linux-amd64 /usr/local/bin/minikube
- minikube start --kubernetes-version=v1.20.0 --cpus=4 --memory=8g
+ minikube start --kubernetes-version=v1.22.0 --cpus=4 --memory=8g
 ```
 At this point we have a functional K8s cluster with 1 node running on the workstation and we can use the Kubernetes command-line tool(kubectl) to interact with the K8s cluster
 
@@ -28,8 +28,7 @@ This repo includes an echo service that can be built by the following steps
 ```
  cd echoservice
  docker build --tag echoservice:0.0.1 .
- minikube cache add echoservice:0.0.1  
- minikube cache reload
+ minikube image load echoservice:0.0.1
 ```
 
  We have built the docker image on our local docker, but want to access the local images in minikube which uses a separate docker daemon. The cache command is necessary to make the local images available in minikube. The cache reload needs to be done when the image changes
@@ -61,16 +60,17 @@ Setup helm on your workstation by following the steps in https://helm.sh/docs/in
 
 ```
 cd monitoring
-kubectl apply -f metricsserver.yaml
+kubectl apply -f metricsserver.yaml //This is an optional step and required only if you want to try HPA. The prom operators does not rely on metrics server for metrics
+kubectl create namespace monitoring
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm install --namespace monitoring --create-namespace --generate-name prometheus-community/kube-prometheus-stack --version=16.1.0 -f prom.yaml
+helm install --namespace monitoring monitoring-stack prometheus-community/kube-prometheus-stack --version=19.2.2 -f conf.yaml
 The stack installs grafana but it is setup as a cluster IP and we have to edit the service to make it a NodePort for accessing it outside the K8s cluster. Please note that all the monitoring components are deployed to a different namespace (monitoring) and so the namespace has to be provided while issuing kubectl commands
 kubectl get services -n monitoring to see the services in the monitoring namespace. Copy the name of the grafana service
-kubectl edit svc grafana-service-name -n monitoring (mine was kube-prometheus-stack-1620468637-grafana) 
+kubectl edit svc grafana-service-name -n monitoring (should be monitoring-stack-grafana if you have followed above steps) 
 Edit the service type from ClusterIP to NodePort and save the config  //this should be in the 3rd last line of the service config
 kubectl get services -n monitoring //This would indicate the port (in the 32000 range) that is assigned for the Grafana NodePort service
-Navigate to http://minikubeip:nodeport on the browser to see the grafana dashboards. The default credentials are admin prom-operator
+Navigate to http://minikubeip:nodeport on the browser to see the grafana dashboards. The default credentials are admin/prom-operator
 The Kubernetes/Compute Resources/Workload dashboard would show the pod CPU, mem and other metrics
 Run the apache workbench to simulate some load to see a bump in CPU/mem on these services
 ab -c 100 -n 100000 http://minikubeip:nodeport/api/echo/testing

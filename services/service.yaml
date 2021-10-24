@@ -30,9 +30,9 @@ kind: Service
 metadata:
   name: echoservice
 spec:
+  type: NodePort
   ports:
   - port: 9595
     targetPort: 9595
-    name: http
   selector:
     app: echo
